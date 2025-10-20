@@ -113,14 +113,8 @@ module apb_slave (
                                 cos_data_reg <= PWDATA;
                                 $display("APB SLAVE: Data register write = 0x%08h", PWDATA);
                             end
-                            
-                            default: begin
-                                $display("APB SLAVE: Invalid write address 0x%08h", PADDR);
-                            end
                         endcase
                     end
-                end else begin
-                    $display("APB SLAVE: Invalid write address 0x%08h", PADDR);
                 end
             end
             
@@ -199,17 +193,14 @@ module apb_slave (
                         
                         default: begin
                             PRDATA = 32'hDEADBEEF;
-                            $display("APB SLAVE: Invalid read address 0x%08h, returning 0xDEADBEEF", PADDR);
                         end
                     endcase
                 end
                 else begin
                     PRDATA = 32'hDEADBEEF;
-                    $display("APB SLAVE: Invalid read address 0x%08h", PADDR);
                 end
             end else begin
                 PRDATA = 32'hDEADBEEF;
-                $display("APB SLAVE: Invalid read address 0x%08h", PADDR);
             end
         end
     end
