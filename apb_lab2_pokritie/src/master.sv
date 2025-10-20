@@ -72,11 +72,6 @@ module apb_master (
                         $display("APB MASTER: Waiting for PREADY...");
                     end
                 end
-                
-                default: begin
-                    state <= IDLE;
-                    $display("APB MASTER: Invalid state, returning to IDLE");
-                end
             endcase
         end
     end
