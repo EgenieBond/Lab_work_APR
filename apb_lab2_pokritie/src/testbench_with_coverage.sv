@@ -1,4 +1,4 @@
- `timescale 1ns/1ps
+`timescale 1ns/1ps
 
 module Testbench_With_Coverage;
 
@@ -200,8 +200,8 @@ module Testbench_With_Coverage;
         master_inst.apb_read(32'h0000000C, read_data);
         condition_count = condition_count + 1;
         
-        // =====================================================================
-// ЧАСТЬ 2: ВЫЧИСЛЕНИЕ COS(X) - УПРОЩЕННАЯ ВЕРСИЯ
+	// =====================================================================
+// ЧАСТЬ 2: ВЫЧИСЛЕНИЕ COS(X) - ИСПРАВЛЕННАЯ ВЕРСИЯ
 // =====================================================================
 
 branch_count = branch_count + 1;
@@ -210,7 +210,7 @@ function_count = function_count + 1;
 $display("");
 $display("=== FIXED COS CALCULATION TESTS ===");
 
-// Тестирование всех углов с шагом π/4 - УПРОЩЕННАЯ ВЕРСИЯ
+// Тестирование всех углов с шагом π/4 - ИСПРАВЛЕННАЯ ВЕРСИЯ
 for (angle_idx = 0; angle_idx < 8; angle_idx = angle_idx + 1) begin
     statement_count = statement_count + 1;
     parameter_value_count = parameter_value_count + 1;
@@ -224,10 +224,22 @@ for (angle_idx = 0; angle_idx < 8; angle_idx = angle_idx + 1) begin
     // Шаг 1: Записываем контрольный регистр с битом запуска
     master_inst.apb_write(32'h00000020, control_value);
     
-    // Даем время для вычисления
-    #50;
+    // Шаг 2: Ждем завершения вычисления через статусный регистр
+    calculation_ready = 0;
+    for (i = 0; i < 10; i = i + 1) begin
+        master_inst.apb_read(32'h00000028, read_data);
+        if (read_data[0]) begin // Бит 0 = calculation_done
+            calculation_ready = 1;
+            break;
+        end
+        #10;
+    end
     
-    // Шаг 2: Чтение результата cos
+    if (!calculation_ready) begin
+        $display("WARNING: Cos calculation timeout for angle %0d", angle_idx);
+    end
+    
+    // Шаг 3: Чтение результата cos
     master_inst.apb_read(32'h00000024, read_data);
     
     // Проверка результата
