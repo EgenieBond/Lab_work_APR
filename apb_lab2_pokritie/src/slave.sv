@@ -69,6 +69,9 @@ module apb_slave (
             // Обновляем регистр статуса
             cos_status_reg <= {30'd0, calculation_busy, calculation_done};
             
+            // Сбрасываем флаг завершения в начале такта
+            calculation_done <= 1'b0;
+            
             if (PSEL && PENABLE && PWRITE) begin
                 if (PADDR[31:8] == 24'h0) begin
                     // Обычные регистры (0x00 - 0x1F)
@@ -100,7 +103,6 @@ module apb_slave (
                                 
                                 if (PWDATA[7] && !calculation_busy) begin
                                     calculation_busy <= 1'b1;
-                                    calculation_done <= 1'b0;
                                     $display("APB SLAVE: Starting cos calculation for angle index %0d", PWDATA[2:0]);
                                 end
                             end
@@ -114,7 +116,7 @@ module apb_slave (
                 end
             end
             
-            // Логика вычисления cos(x)
+            // Логика вычисления cos(x) - В ОТДЕЛЬНОМ УСЛОВИИ
             if (calculation_busy) begin
                 // Имитация вычисления (1 такт)
                 $display("APB SLAVE: Processing cos calculation for angle %0d", angle_index);
@@ -133,14 +135,14 @@ module apb_slave (
         end
     end
 
-    // Логика чтения - УПРОЩЕННАЯ ВЕРСИЯ БЕЗ ПРОБЛЕМНЫХ КОНСТАНТ
+    // Логика чтения
     always @(*) begin
         PRDATA = 32'd0;
         if (PSEL && !PWRITE) begin
             if (PADDR[31:8] == 24'h0) begin
                 // Обычные регистры (0x00 - 0x1F)
                 if (PADDR[7:5] == 3'b000) begin
-                    // Обработка невыровненных адресов - ПРОСТЫЕ КОНСТАНТЫ
+                    // Обработка невыровненных адресов
                     if (PADDR[1:0] != 2'b00) begin
                         PRDATA = 32'hAAAA5555; // Простая константа для невыровненного адреса
                         $display("APB SLAVE: Misaligned address 0x%08h", PADDR);
