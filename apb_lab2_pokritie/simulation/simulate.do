@@ -6,7 +6,7 @@ quit -sim
 vlib work
 
 echo "=========================================="
-echo "Starting APB System Simulation with Coverage"
+echo "Starting APB System Simulation with Detailed Coverage"
 echo "=========================================="
 
 # Компиляция SystemVerilog файлов
@@ -39,9 +39,8 @@ add wave -hex /Testbench_With_Coverage/slave_inst/cos_control_reg
 add wave -hex /Testbench_With_Coverage/slave_inst/cos_data_reg
 add wave -hex /Testbench_With_Coverage/slave_inst/cos_status_reg
 
-# Убрали волны для счетчиков покрытия, так как они не видны в wave
-# Вместо этого добавим информационный раздел
-add wave -divider "Coverage Info"
+# Флаги покрытия для wave
+add wave -divider "Coverage Flags"
 add wave -literal /Testbench_With_Coverage/fsm_idle_covered
 add wave -literal /Testbench_With_Coverage/fsm_setup_covered
 add wave -literal /Testbench_With_Coverage/fsm_access_covered
@@ -49,7 +48,7 @@ add wave -binary /Testbench_With_Coverage/cos_angles_covered
 
 wave zoom full
 
-echo "Running simulation for 10000ns..."
-run 10000ns
+echo "Running simulation for 15000ns..."
+run 15000ns
 
 echo "Simulation completed"
