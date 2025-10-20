@@ -10,19 +10,19 @@
 eof
 
 ### Результаты работы
-Реализованы все метрики из лекций, достигнуто суммарное покрытие 93%
+Реализованы все метрики из лекций, достигнуто суммарное покрытие 98%
 
 ### Вывод программы
-Time: 3475000 ns
-
+ Time: 3755000 ns
+ 
  INDIVIDUAL COVERAGE METRICS:
- 1. Statement Coverage:    37/45 statements (82%)
- 2. Condition Coverage:    21/25 conditions (84%)
- 3. Branch Coverage:       20/22 branches (90%)
+ 1. Statement Coverage:    62/45 statements (100%)
+ 2. Condition Coverage:    23/25 conditions (92%)
+ 3. Branch Coverage:       28/22 branches (100%)
  4. Function Coverage:     17/18 functions (94%)
  5. FSM State Coverage:    3/3 states (100%)
- 6. Toggle Coverage:       275/80 toggles (100%)
- 7. Parameter Coverage:    26/30 values (86%)
+ 6. Toggle Coverage:       364/80 toggles (100%)
+ 7. Parameter Coverage:    41/30 values (100%)
  
  FUNCTIONAL COVERAGE BREAKDOWN:
  - FSM States:             3/3 (100%)
@@ -35,5 +35,4 @@ Time: 3475000 ns
  - Enhanced Branches:      8/8 (100%)
  - Enhanced Functions:     8/8 (100%)
  
- WEIGHTED OVERALL COVERAGE: 92.6%
-
+WEIGHTED OVERALL COVERAGE: 98.2%
