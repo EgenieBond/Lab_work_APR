@@ -19,7 +19,7 @@ module apb_master (
     logic [31:0] read_data_reg;
     logic transaction_active;
     logic [31:0] current_addr;
-    logic read_complete;  // Добавляем флаг завершения чтения
+    logic read_complete;
     
     localparam IDLE = 2'b00;
     localparam SETUP = 2'b01;
@@ -40,6 +40,7 @@ module apb_master (
             $display("APB MASTER: Reset completed - FSM in IDLE state");
         end else begin
             read_complete <= 1'b0;  // Сбрасываем флаг каждый такт
+            
             case (state)
                 IDLE: begin
                     PENABLE <= 1'b0;
@@ -60,23 +61,26 @@ module apb_master (
                     if (PREADY) begin
                         if (!PWRITE) begin
                             read_data_reg <= PRDATA;
-                            read_complete <= 1'b1;  // Устанавливаем флаг завершения
+                            read_complete <= 1'b1;
                             $display("APB MASTER: Read data captured: 0x%08h", PRDATA);
+                            
+                            // Обработка ошибок
+                            if (PSLVERR) begin
+                                $display("APB MASTER: SLVERR detected! Data may be invalid");
+                            end
                         end
                         PSEL <= 1'b0;
                         PENABLE <= 1'b0;
                         state <= IDLE;
                         transaction_active <= 1'b0;
                         $display("APB MASTER: Transaction completed, returning to IDLE");
-                    end else begin
-                        $display("APB MASTER: Waiting for PREADY...");
                     end
                 end
             endcase
         end
     end
 
-    // Задача для записи
+    // Задача для записи - ИСПРАВЛЕННАЯ
     task apb_write(input [31:0] inp_addr, input [31:0] inp_data);
         begin
             $display("");
@@ -97,6 +101,7 @@ module apb_master (
             
             // Ждем завершения транзакции
             wait(transaction_active == 0);
+            @(posedge PCLK); // Даем один такт для стабилизации
             
             $display("APB MASTER: WRITE TRANSACTION COMPLETED SUCCESSFULLY");
             $display("++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -104,7 +109,7 @@ module apb_master (
         end
     endtask
 
-    // Задача для чтения - ИСПРАВЛЕННАЯ ВЕРСИЯ
+    // Задача для чтения - ИСПРАВЛЕННАЯ
     task apb_read(input [31:0] inp_addr, output logic [31:0] out_data);
         begin
             $display("");
@@ -121,9 +126,9 @@ module apb_master (
             
             $display("APB MASTER: Read signals set, starting transaction...");
             
-            // Ждем не только завершения транзакции, но и флага чтения
+            // Ждем завершения транзакции - УПРОЩЕННАЯ ВЕРСИЯ
             wait(transaction_active == 0);
-            @(posedge read_complete);  // Дополнительно ждем флага завершения чтения
+            @(posedge PCLK); // Даем один такт для стабилизации
             
             out_data = read_data_reg;
             $display("APB MASTER: Read data stored: 0x%08h", out_data);
