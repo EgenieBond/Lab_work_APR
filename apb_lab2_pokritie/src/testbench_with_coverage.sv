@@ -646,6 +646,39 @@ end
         parameter_value_count = parameter_value_count + 15;
 
         #50;
+
+			// =========================================================================
+// ЧАСТЬ 10: ТЕСТИРОВАНИЕ PSLVERR ERROR CONDITIONS
+// =========================================================================
+
+$display("");
+$display("=== TESTING PSLVERR ERROR CONDITIONS ===");
+
+// Тест 1: Чтение с ошибкой PSLVERR
+$display("--- TEST 1: Read operation with PSLVERR ---");
+force slave_inst.PSLVERR = 1'b1;                    
+#10;                                                
+master_inst.apb_read(32'h00000000, read_data);      
+#50;                                                
+release slave_inst.PSLVERR;                         
+condition_count = condition_count + 1;
+statement_count = statement_count + 1;
+branch_count = branch_count + 1;
+
+#30;
+
+// Тест 2: Запись с ошибкой PSLVERR  
+$display("--- TEST 2: Write operation with PSLVERR ---");
+force slave_inst.PSLVERR = 1'b1;                    
+#10;                                                
+master_inst.apb_write(32'h00000004, 32'hDEADBEEF);  
+#50;                                                  
+release slave_inst.PSLVERR;                         
+condition_count = condition_count + 1;
+statement_count = statement_count + 1;
+branch_count = branch_count + 1;
+
+#30;
         
         // =====================================================================
         // ФИНАЛЬНЫЕ ДЕЙСТВИЯ И ОТЧЕТ
